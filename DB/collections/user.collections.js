@@ -1,4 +1,4 @@
-import { Schema, model, Types } from "mongoose";
+import { Schema, model } from "mongoose";
 
 const userShema = new Schema({
     name: {
@@ -14,22 +14,37 @@ const userShema = new Schema({
         type: String,
         required: true,
     },
+    phoneNumber: {
+        type: String,
+        unique: true,
+        sparse: true   // Allows the phoneNumber to be optional
+    },
+    isPhoneNumberVerified: {
+        type: Boolean,
+        default: false
+    },  
+    address: {
+        type: String,
+    },
+    Age: {
+        type: Number,
+    },
     role: {
         type: String,
         enum: ["user", "admin"],
         default: "user",
     },
-    confirmEmail: {
+    isEmailVerified: {
         type: Boolean,
         default: false
     },
-    isBlocked: {
+    isloggedIn: {
         type: Boolean,
         default: false
     }
 },
 {
-    timestamps: true,
+    timestamps: true, 
     versionKey: false
 })
 
