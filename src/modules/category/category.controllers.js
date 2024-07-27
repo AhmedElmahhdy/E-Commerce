@@ -7,14 +7,19 @@ import deleteFile from "../../utils/delete-file.js"
 
 export const addCategory = async (req,res,next)=>{
      const {name} = req.body
+     console.log(name,req.file);  
      // check required fields 
     if(!name) return next(new ErrorClass("Name is required",400))
+     // check if category exist
+    const isCategoryExist = await Category.findOne({name})
+    if(isCategoryExist) return next(new ErrorClass("Category already exist",400))
      // create slug
     const slug = slugify(name,{
         replacement: "-",
         lower: true
     })
     // prepare category object
+    
     const category = new Category({
         name,
         image:req.file.path,
@@ -48,29 +53,59 @@ export const deleteCategory = async (req,res,next)=>{
 
 // =========================== update category ===========================
 // have a bug can't read data from body
-export const updateCategory = async (req,res,next)=>{
-    const {id} = req.params
-    const {name} = req.body
-    console.log(name ,req.file,id);
-    const category = await Category.findById(id)
-    if(!category) return next(new ErrorClass("Category not found",404))
-    //console.log(name ,req.file);
-    // check name
-    if(name){
-        category.name = name
-        category.slug = slugify(name,{
-            replacement: "-",
-            lower: true
-        })
-    }
-    // check image
+// export const updateCategory = async (req,res,next)=>{
+//     const {id} = req.params
+//     const {name} = req.body
+
+//     console.log(name,req.file);
+//     const category = await Category.findById(id)
+//     if(!category) return next(new ErrorClass("Category not found",404))
+//     //console.log(name ,req.file);
+//     // check name
+//     if(name){
+//         category.name = name
+//         category.slug = slugify(name,{
+//             replacement: "-",
+//             lower: true
+//         })
+//     }
+//     // check image
           
      
-    if(req.file){
-        deleteFile(category.image,"category")
-        category.image = req.file.path
+//     if(req.file){
+//         deleteFile(category.image,"category")
+//         category.image = req.file.path
+//     }
+//     console.log(category);
+//     await category.save()
+//     res.json({message:"Category updated successfully",category})
+// }
+
+
+export const updateCategory = async (req, res, next) => {
+    const { id } = req.params;
+    const { name } = req.body;
+
+    console.log('Name from req.body:', name);
+    console.log('File from req.file:', req.file);
+
+    const category = await Category.findById(id);
+    if (!category) return next(new ErrorClass("Category not found", 404));
+
+    if (name) {
+        category.name = name;
+        category.slug = slugify(name, {
+            replacement: "-",
+            lower: true
+        });
     }
-    console.log(category);
-    await category.save()
-    res.json({message:"Category updated successfully",category})
-}
+
+    if (req.file) {
+        deleteFile(category.image, "category");
+        category.image = req.file.path;
+    }
+
+    console.log('Updated category:', category);
+    await category.save();
+    res.json({ message: "Category updated successfully", category });
+};

@@ -32,4 +32,5 @@ export const fileUploader = (folderName,fileName) => {
     });
     const upload = multer({ storage ,fileFilter });
     return upload.single(fileName);
+    
 }

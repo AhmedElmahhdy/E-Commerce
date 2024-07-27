@@ -13,6 +13,7 @@ categoryRouters
 )
 // =========================== update category ===========================
 .put('/update/:id',
+    fileUploader("category","image"),
     categoryControllers.updateCategory
     //errorHandler(categoryControllers.updateCategory)
 );
