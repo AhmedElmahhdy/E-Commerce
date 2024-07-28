@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 
 
 export const fileUploader = (folderName,fileName) => {
+    
     const fileFilter = (req, file, cb) => {
         // Check if the file is an image
         const allowedTypes = /jpeg|jpg|png/;

@@ -52,60 +52,28 @@ export const deleteCategory = async (req,res,next)=>{
 }
 
 // =========================== update category ===========================
-// have a bug can't read data from body
-// export const updateCategory = async (req,res,next)=>{
-//     const {id} = req.params
-//     const {name} = req.body
-
-//     console.log(name,req.file);
-//     const category = await Category.findById(id)
-//     if(!category) return next(new ErrorClass("Category not found",404))
-//     //console.log(name ,req.file);
-//     // check name
-//     if(name){
-//         category.name = name
-//         category.slug = slugify(name,{
-//             replacement: "-",
-//             lower: true
-//         })
-//     }
-//     // check image
-          
-     
-//     if(req.file){
-//         deleteFile(category.image,"category")
-//         category.image = req.file.path
-//     }
-//     console.log(category);
-//     await category.save()
-//     res.json({message:"Category updated successfully",category})
-// }
-
-
 export const updateCategory = async (req, res, next) => {
     const { id } = req.params;
     const { name } = req.body;
 
-    console.log('Name from req.body:', name);
-    console.log('File from req.file:', req.file);
-
     const category = await Category.findById(id);
     if (!category) return next(new ErrorClass("Category not found", 404));
-
-    if (name) {
+    if (!name & !req.file) return next(new ErrorClass("Name or image is required", 400));
+    // if name exists, update the name
+   if (name){
         category.name = name;
         category.slug = slugify(name, {
             replacement: "-",
             lower: true
         });
-    }
 
+   }
+    // if req.file exists, delete the old image and update the image path
     if (req.file) {
         deleteFile(category.image, "category");
         category.image = req.file.path;
     }
-
-    console.log('Updated category:', category);
+    
     await category.save();
     res.json({ message: "Category updated successfully", category });
 };
