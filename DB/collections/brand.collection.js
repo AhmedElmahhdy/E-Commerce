@@ -1,13 +1,3 @@
-/**
- * name 
- * slug
- * logo 
- * addedBy
- * subCategory
- *category
- * 
- */
-
 import { Schema, model, Types } from "mongoose";
 
 const brandShema = new Schema({
