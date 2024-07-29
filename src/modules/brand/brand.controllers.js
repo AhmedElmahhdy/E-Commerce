@@ -39,11 +39,13 @@ export const getAllBrand = async (req,res,next)=>{
 // =========================== delete brand ===========================
 export const deleteBrand = async (req,res,next)=>{
    const {id} = req.params
-   const brand = await Brand.findById(id)
+   const brand = await Brand.findOne({$or:[{_id:id},{subCategory:id}]})
+   console.log(brand);
    if(!brand) return next(new ErrorClass("Brand not found",404))
 
-       deleteFile(brand.logo,"brand")
-       await Brand.deleteOne({_id:id})
+   const isBrandDeleted = await Brand.deleteOne(brand._id)
+   if (!isBrandDeleted) return next(new ErrorClass("Brand not found",404))
+    deleteFile(brand.logo,"brand")
 
    res.json({message:"Brand deleted successfully"})
 }
@@ -54,7 +56,7 @@ export const updateBrand = async (req,res,next)=>{
     const {id} = req.params
     const {name} = req.body
     console.log(name,req.file);
-    const brand = await Brand.findById(id)
+    const brand = await Brand. findById(id)
     if(!brand) return next(new ErrorClass("Brand not found",404))
     if (!name & !req.file) return next(new ErrorClass("Name or logo is required",400))
    if (name) {

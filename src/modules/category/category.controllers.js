@@ -2,6 +2,9 @@ import slugify from "slugify"
 import { Category } from "../../../DB/collections/category.collections.js"
 import ErrorClass from "../../utils/Error-class.js"
 import deleteFile from "../../utils/delete-file.js"
+import { SubCategory } from "../../../DB/collections/sub-category.collections.js"
+import { Brand } from "../../../DB/collections/brand.collection.js"
+import axios from "axios"
 
 // =========================== add category ===========================
 
@@ -43,9 +46,17 @@ export const deleteCategory = async (req,res,next)=>{
     const {id} = req.params
     const category = await Category.findById(id)
     if(!category) return next(new ErrorClass("Category not found",404))
-
+        // delete category image 
         deleteFile(category.image,"category")
-        await Category.deleteOne({_id:id})
+        // delete any sub-category belong to this category
+        // two logic to delete any collection belong to this category
+        // 1- first logic  
+            // await SubCategory.deleteMany({category:id})
+            // await Brand.deleteMany({category:id})
+        // 2- second logic
+        // nested delete => in delete category api call delete sub-categorty api that call delete brand api in side here 
+        const isSubCategoryDeleted = await axios.delete(` ${req.protocol}://${req.headers.host}/sub-category/delete/${category._id}`)
+        await Category.deleteOne({_id:id}) 
 
     res.json({message:"Category deleted successfully"})
 
