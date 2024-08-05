@@ -13,5 +13,13 @@ productRouters
     fileUploader("product").array("images"),
     errorHandler(productControllers.addProduct)
 )
+// =========================== get all product ===========================
+.get('/get-all', 
+    productControllers.getAllProduct
+)
+// =========================== delete product ===========================
+.delete('/delete/:id', 
+    productControllers.deleteProduct
+)
 
 export default productRouters

@@ -30,14 +30,34 @@ export const addProduct = async (req, res, next) => {
         name,
         description,
         price,
-        stock,
-        image: req.files.path,
+        stock, 
         slug,
         category,
         subCategory,
         brand,
     });
+    if(req.files.length)
+    for (const file of req.files) {
+       product.image.urls.push (file.path);
+    }
+   
     // save product
-    await product.save();
+   await product.save();
    res.json({ message: "Product created successfully"});
+}
+
+// =========================== get all product ===========================
+export const getAllProduct = async (req, res, next) => {
+    const products = await Product.find({});
+    res.json({ products });
+}
+// =========================== delete product ===========================
+export const deleteProduct = async (req, res, next) => {
+    const { id } = req.params;
+    const product = await Product.findById(id);
+    if (!product) return next(new ErrorClass("Product not found", 404));
+    deleteFile(product.image.urls, "product");
+    const isProductDeleted = await Product.deleteOne({ _id: id });
+    if (!isProductDeleted) return next(new ErrorClass("Product not found", 404));
+    res.json({ message: "Product deleted successfully" });
 }
