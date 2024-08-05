@@ -8,7 +8,7 @@ const subCategoryRoutes = Router()
 subCategoryRoutes
 // =========================== add sub-category ===========================
     .post('/add',
-    fileUploader("sub-category","image"),
+    fileUploader("sub-category").single("image"),
     subCategoryController.addSubCategory
 )
 
@@ -23,7 +23,7 @@ subCategoryRoutes
 
 // =========================== update sub-category ===========================
 .put('/update/:id', 
-    fileUploader("sub-category","image"),
+    fileUploader("sub-category").single("image"),
     subCategoryController.updateSubCategory
 )
 

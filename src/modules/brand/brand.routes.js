@@ -11,7 +11,7 @@ const brandRouters = Router()
 brandRouters  
 // =========================== add brand ===========================
 .post('/add',
-    fileUploader("brand","logo"),
+    fileUploader("brand").single("logo"),
     errorHandler(brandControllers.addBrand)
 )
 // =========================== get all brand ===========================
@@ -25,7 +25,7 @@ brandRouters
 
 // =========================== update brand ===========================
 .put('/update/:id',
-    fileUploader("brand","logo"),
+    fileUploader("brand").single("logo"),
     errorHandler(brandControllers.updateBrand)
 )
 

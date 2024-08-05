@@ -2,11 +2,11 @@ import multer from "multer";
 import fs from "fs";
 import ErrorClass from "./Error-class.js";
 import path from "path";
-import { v4 as uuidv4 } from "uuid";
 
 
-export const fileUploader = (folderName,fileName) => {
-    
+
+export const fileUploader = (folderName) => {
+
     const fileFilter = (req, file, cb) => {
         // Check if the file is an image
         const allowedTypes = /jpeg|jpg|png/;
@@ -32,6 +32,7 @@ export const fileUploader = (folderName,fileName) => {
         },
     });
     const upload = multer({ storage ,fileFilter });
-    return upload.single(fileName);
+   // return upload.single(fileName);
+   return upload
     
 }

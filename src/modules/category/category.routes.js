@@ -7,20 +7,19 @@ import { errorHandler } from "../../middleware/error-handling.js";
 const categoryRouters = Router()
 
 categoryRouters
+// =========================== add category ===========================
+.post('/add', fileUploader("category").single("image"), 
+errorHandler( categoryControllers.addCategory)
+)
 // =========================== update category ===========================
 .put('/update/:id',
-    fileUploader("category","image"),
+    fileUploader("category").single("image"),
     categoryControllers.updateCategory
     //errorHandler(categoryControllers.updateCategory)
 )
-// =========================== add category ===========================
-.post('/add', fileUploader("category","image"), 
- errorHandler( categoryControllers.addCategory)
-)
-
-
-categoryRouters.get('/get-all', categoryControllers.getAllCategory);
-
-categoryRouters.delete('/delete/:id', categoryControllers.deleteCategory);
+// =========================== get all category ===========================
+.get('/get-all', categoryControllers.getAllCategory)
+// =========================== delete category ===========================
+.delete('/delete/:id', categoryControllers.deleteCategory);
 
 export default categoryRouters 

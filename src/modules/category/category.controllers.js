@@ -15,6 +15,7 @@ export const addCategory = async (req,res,next)=>{
     if(!name) return next(new ErrorClass("Name is required",400))
      // check if category exist
     const isCategoryExist = await Category.findOne({name})
+    req.model ='category'
     if(isCategoryExist) return next(new ErrorClass("Category already exist",400))
      // create slug
     const slug = slugify(name,{
@@ -22,7 +23,6 @@ export const addCategory = async (req,res,next)=>{
         lower: true
     })
     // prepare category object
-    
     const category = new Category({
         name,
         image:req.file.path,
@@ -44,10 +44,11 @@ export const getAllCategory = async (req,res,next)=>{
 // =========================== delete category ===========================
 export const deleteCategory = async (req,res,next)=>{
     const {id} = req.params
-    const category = await Category.findById(id)
-    if(!category) return next(new ErrorClass("Category not found",404))
+    // const category = await Category.findById(id)
+    // if(!category) return next(new ErrorClass("Category not found",404))
         // delete category image 
-        deleteFile(category.image,"category")
+        deleteFile('1722364831960_25.696989849539275_Apple.jpeg',"category")
+        // uploads\category\1722364831960_25.696989849539275_Apple.jpeg
         // delete any sub-category belong to this category
         // two logic to delete any collection belong to this category
         // 1- first logic  
@@ -55,8 +56,8 @@ export const deleteCategory = async (req,res,next)=>{
             // await Brand.deleteMany({category:id})
         // 2- second logic
         // nested delete => in delete category api call delete sub-categorty api that call delete brand api in side here 
-        const isSubCategoryDeleted = await axios.delete(` ${req.protocol}://${req.headers.host}/sub-category/delete/${category._id}`)
-        await Category.deleteOne({_id:id}) 
+        // const isSubCategoryDeleted = await axios.delete(`${req.protocol}://${req.headers.host}/sub-category/delete/${category._id}`)
+        // await Category.deleteOne({_id:id}) 
 
     res.json({message:"Category deleted successfully"})
 
