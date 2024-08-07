@@ -8,7 +8,7 @@ import { Brand } from "../../../DB/collections/brand.collection.js";
 
 // =========================== add product ===========================
 export const addProduct = async (req, res, next) => {
-    const { name, description, price,stock } = req.body;
+    const { name, description, price,stock,Discount,discountType } = req.body;
     const { category, subCategory, brand } = req.query;
      req.model ='product'
     // check required revelant category
@@ -31,19 +31,35 @@ export const addProduct = async (req, res, next) => {
         description,
         price,
         stock, 
-        slug,
+        slug,   
+        Discount:{type:discountType,amount:Discount},
         category,
         subCategory,
         brand,
     });
+    // calculate discount if exist
+    // if(Discount && discountType =="percentage"){
+    //     product.appliedPrice = price - (price*Discount)/100
+    //     product.Discount.type = discountType
+    //     product.Discount.amount = Discount
+    // }
+    // else if(Discount && discountType =="Fixed"){
+    //     product.appliedPrice = price - Discount
+    //     product.Discount.amount = Discount
+    // }
+    // else{
+    //     product.appliedPrice = price
+    // }
+    // add images
     if(req.files.length)
     for (const file of req.files) {
        product.image.urls.push (file.path);
     }
+
    
     // save product
    await product.save();
-   res.json({ message: "Product created successfully"});
+   res.json({ message: "Product created successfully", product });
 }
 
 // =========================== get all product ===========================

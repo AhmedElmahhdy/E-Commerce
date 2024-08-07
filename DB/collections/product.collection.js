@@ -1,4 +1,6 @@
 import { Schema,model , Types } from "mongoose";
+import { badge, discountType } from "../../src/utils/utils-index.js";
+
 
 const productShema = new Schema({
     // String section 
@@ -12,13 +14,18 @@ const productShema = new Schema({
         type: String,
         required: true,
         lowercase: true,
-        unique: true
+       // unique: true
     },
     description: {
         type: String,
-    }
+    },
+    badge: {
+        type: String,
+        enum: Object.values(badge),
+        default: badge.new
+    },
     // Number section
-    ,price: {
+    price: {
         type: Number,
         required: true
     },
@@ -26,17 +33,33 @@ const productShema = new Schema({
         type: Number,
         required: true
     },
-    appliedDiscount: {
+    Discount: {
        amount:{
          type: Number,
          default: 0
        },
        type: {
         type: String,
-        enum: ["Fixed", "percentage"],
-        default: "Fixed"
+        enum: Object.values(discountType),
+        default: discountType.fixed
         },
 
+    },
+    appliedPrice: {
+        type: Number,
+        default: function () {
+            if(this.Discount.type ==discountType.percentage){
+               return  this.price - (this.price*this.Discount.amount)/100
+                
+            }
+            else if(this.Discount.type ==discountType.fixed){
+               return  this.price - this.Discount.amount
+                
+            }
+            else{
+                return this.price
+            }
+        }
     },
     rating: {
         type: Number,
