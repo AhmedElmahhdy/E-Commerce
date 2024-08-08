@@ -4,6 +4,8 @@ import ErrorClass from "../../utils/Error-class.js";
 import deleteFile from "../../utils/delete-file.js";
 import axios from "axios";
 import { Brand } from "../../../DB/collections/brand.collection.js";
+import { discountType } from "../../utils/enums.utils.js";
+import { calculatePrice } from "../../utils/calculate-price.utils.js";
 
 
 // =========================== add product ===========================
@@ -37,19 +39,6 @@ export const addProduct = async (req, res, next) => {
         subCategory,
         brand,
     });
-    // calculate discount if exist
-    // if(Discount && discountType =="percentage"){
-    //     product.appliedPrice = price - (price*Discount)/100
-    //     product.Discount.type = discountType
-    //     product.Discount.amount = Discount
-    // }
-    // else if(Discount && discountType =="Fixed"){
-    //     product.appliedPrice = price - Discount
-    //     product.Discount.amount = Discount
-    // }
-    // else{
-    //     product.appliedPrice = price
-    // }
     // add images
     if(req.files.length)
     for (const file of req.files) {
@@ -76,4 +65,60 @@ export const deleteProduct = async (req, res, next) => {
     const isProductDeleted = await Product.deleteOne({ _id: id });
     if (!isProductDeleted) return next(new ErrorClass("Product not found", 404));
     res.json({ message: "Product deleted successfully" });
+}
+// =========================== update product ===========================
+
+/**
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ * need to update => name . slug, description, price, stock, category, subCategory, brand , add discount , change image 
+ */ 
+export const updateProduct = async (req, res, next) => {
+    const product = req.doc
+    // update images if exist
+    if(req.files){
+        deleteFile(product.image.urls, "product")
+        product.image.urls = [] // this line to remove old images from database
+        console.log(product.image.urls);
+        for (const file of req.files) {
+            product.image.urls.push (file.path);
+        }
+        //ToDo:allow user to update one image only not all images
+    }
+    // update name and slug if exist
+    if(req.body.name){
+        product.name = req.body.name
+        product.slug = slugify(req.body.name, {
+            replacement: "-",
+            lower: true
+        });
+    }
+    // update description and overview if exist
+    if(req.body.description) product.description = req.body.description
+    if(req.body.overview) product.overview = req.body.overview
+    // update stock if exist
+    if(req.body.stock){
+        // cheack first if stock is empty or not if not empty then old stock + new stock 
+        if (product.stock ==0 ) {
+            product.stock = req.body.stock
+         }
+         else product.stock = product.stock + req.body.stock
+    }    
+    // update price if exist
+    if (req.body.price || req.body.Discount || req.body.discountType){
+        const discount ={}
+        discount.type = req.body.discountType || product.Discount.type
+        discount.amount = req.body.Discount || product.Discount.amount
+       
+       const appliedPrice = calculatePrice(req.body.price,discount)
+       if (appliedPrice) {
+           product.appliedPrice = appliedPrice
+       }
+         product.price = req.body.price || product.price
+         product.Discount = discount || product.Discount
+    }
+    await product.save()
+    res.json({message:"updated successfully",product})
 }

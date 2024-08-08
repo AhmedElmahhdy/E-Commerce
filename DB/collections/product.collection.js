@@ -1,6 +1,7 @@
 import { Schema,model , Types } from "mongoose";
-import { badge, discountType } from "../../src/utils/utils-index.js";
-
+import { badge, calculatePrice, discountType } from "../../src/utils/utils-index.js";
+import { config } from "dotenv";
+config()
 
 const productShema = new Schema({
     // String section 
@@ -23,6 +24,9 @@ const productShema = new Schema({
         type: String,
         enum: Object.values(badge),
         default: badge.new
+    },
+    overview: {
+        type: String,
     },
     // Number section
     price: {
@@ -48,17 +52,7 @@ const productShema = new Schema({
     appliedPrice: {
         type: Number,
         default: function () {
-            if(this.Discount.type ==discountType.percentage){
-               return  this.price - (this.price*this.Discount.amount)/100
-                
-            }
-            else if(this.Discount.type ==discountType.fixed){
-               return  this.price - this.Discount.amount
-                
-            }
-            else{
-                return this.price
-            }
+           return calculatePrice(this.price, this.Discount)
         }
     },
     rating: {
@@ -109,5 +103,12 @@ const productShema = new Schema({
     }
 },{timestamps: true, versionKey: false})
 
-
+// retrive all image url with localhost
+productShema.post("find", function (doc) {
+    doc.forEach((doc) => {
+      doc.image.urls = doc.image.urls.map((url) => {
+    return `${process.env.BASE_URL}/${url}`;
+      });
+    });
+})
 export const Product = model("Product", productShema)
