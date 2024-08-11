@@ -6,6 +6,8 @@ import axios from "axios";
 import { Brand } from "../../../DB/collections/brand.collection.js";
 import { discountType } from "../../utils/enums.utils.js";
 import { calculatePrice } from "../../utils/calculate-price.utils.js";
+import { ApiFeatures } from "../../utils/utils-index.js";
+
 
 
 // =========================== add product ===========================
@@ -53,8 +55,14 @@ export const addProduct = async (req, res, next) => {
 
 // =========================== get all product ===========================
 export const getAllProduct = async (req, res, next) => {
-    const products = await Product.find({});
-    res.json({ products });
+  
+    const mongooseQuery = Product
+    const ApiFeature = new ApiFeatures(req.query, mongooseQuery)
+    .filter()
+    .sort()
+    .pagination()
+    const product = await ApiFeature.mongooseQuery
+    res.json({  product });
 }
 // =========================== delete product ===========================
 export const deleteProduct = async (req, res, next) => {

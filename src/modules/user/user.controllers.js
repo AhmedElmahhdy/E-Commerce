@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken"
 import bcryptjs from "bcryptjs"
 import sendEmail from "../../services/send-email.services.js"
 
+
 // =========================== Sign Up ===========================
 export const signUp = async (req,res,next)=>{ 
    const {name,email,password} = req.body
@@ -18,9 +19,9 @@ export const signUp = async (req,res,next)=>{
         password:hashPassword
     }) 
   // create token
-  const token = jwt.sign({id:user._id},process.env.VERFIY_EMAIL_SECRET_KEY)
+ // const token = jwt.sign({id:user._id},process.env.VERFIY_EMAIL_SECRET_KEY)
   // create verfication link
-  const validationLink = `${req.protocol}://${req.headers.host}/user/verfiy-email/${token}`
+  //const validationLink = `${req.protocol}://${req.headers.host}/user/verfiy-email/${token}`
   // send email 
 //   const isSentEmail = await sendEmail({
 //     to: email,
@@ -49,3 +50,28 @@ export const verfiyEmail = async (req,res,next)=>{
     await user.save()
     res.json({message:"Email verfiyed"})
 }
+
+// =========================== Sign In ===========================
+export const signIn = async (req,res,next)=>{
+    const {email,password} = req.body
+    const user = await User.findOne({email})
+    if(!user) return next(new ErrorClass("User not found",404))
+    if(!user.isEmailVerified) return next(new ErrorClass("Please verfiy your account",400))
+    const isMatch = bcryptjs.compareSync(password,user.password)
+    if(!isMatch) return next(new ErrorClass("Wrong password",400))
+    const token =`${process.env.PREFIX_TOKEN} ${jwt.sign({id:user._id},process.env.LOGIN_SECRET_KEY_TOKEN)}`
+    user.isloggedIn = true
+    await user.save()
+    res.json({message:"Sign in successfully",token})
+    }
+// =========================== Sign Out ==========================
+export const signOut = async (req,res,next)=>{
+  const userData = req.user
+  if(!userData) return next(new ErrorClass("User not logged in",404))
+  userData.isloggedIn = false
+  await userData.save()
+  res.json({message:"Sign out successfully"})
+}
+
+
+

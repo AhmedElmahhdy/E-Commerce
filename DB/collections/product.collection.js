@@ -1,7 +1,8 @@
-import { Schema,model , Types } from "mongoose";
+import mongoose from "../global-setup.js";
 import { badge, calculatePrice, discountType } from "../../src/utils/utils-index.js";
 import { config } from "dotenv";
 config()
+const { Schema, model , Types } = mongoose
 
 const productShema = new Schema({
     // String section 
@@ -102,6 +103,9 @@ const productShema = new Schema({
         ref: "User"
     }
 },{timestamps: true, versionKey: false})
+
+
+
 
 // retrive all image url with localhost
 productShema.post("find", function (doc) {

@@ -5,6 +5,7 @@ import deleteFile from "../../utils/delete-file.js"
 import { SubCategory } from "../../../DB/collections/sub-category.collections.js"
 import { Brand } from "../../../DB/collections/brand.collection.js"
 import axios from "axios"
+import { ApiFeatures } from "../../utils/api-featuers.utils.js"
 
 // =========================== add category ===========================
 
@@ -38,7 +39,13 @@ export const addCategory = async (req,res,next)=>{
 }
 // =========================== get all category ===========================
 export const getAllCategory = async (req,res,next)=>{
-    const categories = await Category.find({})
+   // const categories = await Category.find({})
+   const mongooseQuery = Category
+    const ApiFeature = new ApiFeatures(req.query, mongooseQuery)
+    .filter()
+    .sort()
+    .pagination()
+    const categories = await ApiFeature.mongooseQuery
     res.json({categories})
 }
 // =========================== delete category ===========================

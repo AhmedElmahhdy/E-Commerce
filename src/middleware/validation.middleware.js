@@ -1,21 +1,37 @@
-import { ErrorClass } from "../utils/error-class.utils.js";
+// import { ErrorClass } from "../utils/error-class.utils.js";
+
+import ErrorClass from "../utils/Error-class.js";
 
 
-const reqKeys = ['body', 'query', "params", "headers"];
+
 
 export const validationMiddleware=(schema)=>{
     return(req,res,next)=>{
-        let errors=[];
-        for(const key of reqKeys)
-        {
-            const validationresult=schema[key]?.validate(req[key],{abortEarly: false})
-            if(validationresult?.error)
-                errors.push(...validationresult.error.details)
-        }
-        if(errors.length) return res.status(400).json({
-            err_msg: "validation error",
-            errors: errors.map(ele => ele.message)
-        })
+       let errors=[]
+        const validationresult=schema.validate(req.body,{abortEarly: false})
+         if(validationresult?.error)
+            errors.push(...validationresult.error.details)
+        if(errors.length) 
+            {
+                console.log("validation error section");
+                return next(new ErrorClass("validation error", 401, errors.map(ele => ele.message)))
+            }
+            console.log("next section");
         next()
     }
 }
+
+
+// export const validationMiddleware = (schema) => {
+//     return (req,res,nest)=>{
+//         const { error } = schema.validate(req.body, { abortEarly: false });
+//         if(error) return  res.status(400).json({
+//             err_msg: "validation error",
+//             errors: error.details.map(ele => ele.message)
+//         })
+//         // TODO: add Error Class
+
+
+//         nest()
+//     }
+// }

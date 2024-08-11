@@ -19,9 +19,10 @@ export const errorHandler = (API) => {
 
 export const globalResponse = (err, req, res, next) => {
   if (err) {
-    res.json({
+    res.status(500).json({
       error: "Faill Response",
       message: err.message,
+      err : err?.error,
       stack: err.stack,
     });
   }
