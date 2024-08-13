@@ -4,6 +4,7 @@ import subCategoryRoutes from "./sub-category/sub-category.routes.js"
 import brandRouters from "./brand/brand.routes.js"
 import productRouters from "./product/product.routes.js"
 import addressRouters from "./address/addres.routes.js"
+import cartRouters from "./cart/cart.routes.js"
 
 const modulesRouters = (app) => {   
 
@@ -13,6 +14,7 @@ const modulesRouters = (app) => {
     app.use("/brand",brandRouters)
     app.use("/product",productRouters)
     app.use("/address",addressRouters)
+    app.use("/cart",cartRouters)
 }
 
 
