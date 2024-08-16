@@ -5,6 +5,7 @@ import brandRouters from "./brand/brand.routes.js"
 import productRouters from "./product/product.routes.js"
 import addressRouters from "./address/addres.routes.js"
 import cartRouters from "./cart/cart.routes.js"
+import couponRouter from "./coupon/coupon.routes.js"
 
 const modulesRouters = (app) => {   
 
@@ -15,6 +16,7 @@ const modulesRouters = (app) => {
     app.use("/product",productRouters)
     app.use("/address",addressRouters)
     app.use("/cart",cartRouters)
+    app.use("/coupon",couponRouter)
 }
 
 

@@ -14,3 +14,14 @@ export const badge = {
     express:"Express"
 
 }
+
+
+export const couponType = {
+    percentage: "percentage",
+    fixed:"Fixed",
+};
+
+export const userRole = {
+    admin:"admin",
+    user:"user"
+}

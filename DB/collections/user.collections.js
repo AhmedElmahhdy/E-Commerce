@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose";
+import { userRole } from "../../src/utils/enums.utils.js";
 
 const userShema = new Schema({
     name: {
@@ -31,7 +32,7 @@ const userShema = new Schema({
     },
     role: {
         type: String,
-        enum: ["user", "admin"],
+        enum: Object.values(userRole),
         default: "user",
     },
     isEmailVerified: {
