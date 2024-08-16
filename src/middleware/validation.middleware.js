@@ -16,7 +16,7 @@ export const validationMiddleware=(schema)=>{
                 console.log("validation error section");
                 return next(new ErrorClass("validation error", 401, errors.map(ele => ele.message)))
             }
-            console.log("next section");
+           
         next()
     }
 }
