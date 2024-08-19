@@ -38,13 +38,5 @@ cartShema.pre("save", function(next) {
 
     next()
 })
-/**
- * productShema.post("find", function (doc) {
-    doc.forEach((doc) => {
-      doc.image.urls = doc.image.urls.map((url) => {
-    return `${process.env.BASE_URL}/${url}`;
-      });
-    });
-})
- */
+
 export const Cart = model("Cart",cartShema)

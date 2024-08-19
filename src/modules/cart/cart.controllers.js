@@ -17,7 +17,7 @@ export const addToCart = async (req,res,next)=>{
 
    // check is product exist and stock is greater than or equel Quantity
     const isProductExist = await Product.findOne({_id:productId,stock:{$gte:Quantity}})
-    if(!isProductExist) return next(new ErrorClass("Product Not Available",404))
+    if(!isProductExist) return next(new ErrorClass("Product out of stock or not found",404))
 
    // prepare product Object
     const productObject = {
@@ -29,8 +29,8 @@ export const addToCart = async (req,res,next)=>{
     // check if cart exist or not
     const cartDoc = await Cart.findOne({userId})
     if (!cartDoc){ 
-        // calculate subtotal price
-        // const subTotal = (isProductExist.appliedPrice) *  Quantity 
+        // calculate subtotal price => (isProductExist.appliedPrice) *  Quantity 
+      
         //prepare cart object to save
         const cart = new Cart({
             userId,

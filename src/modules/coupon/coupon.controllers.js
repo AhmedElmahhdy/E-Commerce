@@ -39,7 +39,15 @@ export const addCoupon = async (req,res,next)=>{
         // add user to coupon
         coupon.User.push(...Users)
     }
+    // prepare changelog object
+    const couponChangelog = new CouponChangelog({
+        couponId:coupon._id,
+        updatedBy:userId,
+        changes:"add coupon"
+        
+    })
     await coupon.save()
+    await couponChangelog.save()
     res.json({message:"coupon added successfully",coupon})
 }
 
@@ -151,8 +159,16 @@ export const deleteCoupon = async (req,res,next)=>{
     if(!coupon) return next(new ErrorClass("coupon not found",404))
         
     coupon.isEnabled = false
+    // prepare coupon changes log object and save
+    const couponChangelog = new CouponChangelog({
+        couponId:coupon._id,
+        updatedBy:userId,
+        changes:"delete coupon"
+        
+    })
 
     await coupon.save()
+    await couponChangelog.save()
     res.json({message:"coupon deleted successfully",coupon})
 }
 

@@ -6,3 +6,4 @@ export * from "./collections/user.collections.js";
 export * from "./collections/address.collection.js"
 export * from "./collections/cart.collection.js"
 export * from "./collections/coupon.collection.js"
+export * from "./collections/order.collection.js"

@@ -24,7 +24,7 @@ export const disableCoupon = () => {
 
 export const enableCoupon = () => {
     schedule.scheduleJob("0 59 23 * * *", async () => {
-        const disabledCoupons = await Coupon.find({isEnabled: false});
+        const enabledCoupons = await Coupon.find({isEnabled: false});
         console.log("cron job is running");
 
         for(const coupon of enabledCoupons){

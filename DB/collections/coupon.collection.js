@@ -11,7 +11,7 @@ const couponSchema = new Schema({
             type: Number,
             require:true
         },
-        couponeType:{
+        couponType:{
             type: String,
             enum:Object.values(couponType) 
         },
@@ -43,7 +43,7 @@ const couponSchema = new Schema({
         ],
         isEnabled:{
             type:Boolean,
-            default:true
+            default:false
         },
         addedBy:{
             type:Types.ObjectId,
