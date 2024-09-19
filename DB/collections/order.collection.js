@@ -68,6 +68,7 @@ const orderSchema = new Schema({
         enum:Object.values(orderStatus)
     },
     paidAt: Date,
+    paymentIntent:String,
     isDelivered: {
         type: Boolean,
         default: false

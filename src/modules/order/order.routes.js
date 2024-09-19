@@ -24,4 +24,9 @@ orderRouters.post("/create",
 .post("/webhook",
     errorHandler(orderControllers.webhook)
 )
+.put("/deliver/:orderId",
+    authatication(),
+    authorizationMiddleware(["admin"]),
+    errorHandler(orderControllers.deliverOrder)
+)
 export default orderRouters

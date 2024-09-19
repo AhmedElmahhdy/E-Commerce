@@ -42,7 +42,10 @@ const userShema = new Schema({
     isloggedIn: {
         type: Boolean,
         default: false
-    }
+    },
+    otp: Number ,
+    otpExpiration: Date,
+    
 },
 {
     timestamps: true, 

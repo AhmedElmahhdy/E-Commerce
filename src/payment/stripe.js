@@ -63,16 +63,44 @@ export const createStripeCoupon = async ({couponCode})=>{
     return stripeCoupon
 }
 
+// create a stripe payment method
+export const createStripePaymentMethod = async ({token}) => {
+    console.log(token);
+    const paymentMethod = await stripe.paymentMethods.create({
+        type: 'card',
+        card: {token}
+    })
+    return paymentMethod
+}
 
 // create a stripe payment intent
 export const createPaymentIntent = async ({amount, currency}) => {
+    const paymentMethod = await createStripePaymentMethod({token:"tok_visa"})
     const paymentIntent = await stripe.paymentIntents.create({
-        amount,
+        amount: amount * 100,
         currency,
         automatic_payment_methods: {
-            enabled: true
-        }
+            enabled: true,
+            allow_redirects: 'never',
+        },
+        payment_method: paymentMethod.id    
     })
 
+    return paymentIntent
+}
+
+// retrieve a stripe payment intent
+export const retrievePaymentIntent = async ({paymentIntentId}) => {
+    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId)
+    return paymentIntent
+}
+
+// confirm a stripe payment intent
+export const confirmPaymentIntent = async ({paymentIntentId}) => {
+    const paymentDetails = await retrievePaymentIntent({paymentIntentId})
+    const paymentIntent = await stripe.paymentIntents.confirm(paymentIntentId,{
+        payment_method: paymentDetails.payment_method
+
+    })
     return paymentIntent
 }
