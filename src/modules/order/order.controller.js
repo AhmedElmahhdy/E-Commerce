@@ -3,15 +3,18 @@ import { Address, Cart, Order, Product } from "../../../DB/collections-index.js"
 import { applyCoupon ,  orderStatus,paymentMethod,paymentStatus} from "../../utils/utils-index.js"
 import {validateCoupon} from "./order.utiles.js"
 import ErrorClass from "../../utils/Error-class.js";
-import { createCheckoutSession, createPaymentIntent, createStripeCoupon } from "../../payment/stripe.js";
+import { createCheckoutSession, createPaymentIntent, createStripeCoupon ,confirmPaymentIntent } from "../../payment/stripe.js";
 
 // =============================== create order ==========================
 export const createOreder = async (req, res,next) => {
     const userId = req.user._id
     const {address,addressId,couponCode,payment_Method} = req.body
 
-    const deliveryFee = 100
+    // check if order exist
+    const isOrderExist = await Order.findOne({userId})
+    if(isOrderExist) return next(new ErrorClass("Order Already Exist",404,"Order Already Exist"))
 
+    const deliveryFee = 100
     // prepare order object
     const order = new Order({ 
         userId,
@@ -50,18 +53,18 @@ export const createOreder = async (req, res,next) => {
         const couponValidation = await validateCoupon(couponCode)
         if(couponValidation.error) return next(new ErrorClass("Coupon validation error",500,couponValidation.message,))
         order.couponCode = couponCode
-        console.log("total before coupon",cart.subTotal) + deliveryFee;
+       
         order.total = applyCoupon(cart.subTotal,couponValidation.coupon) + deliveryFee
-        console.log("total after coupon",order.total);
+      
     }
 
     // add products to order
     order.Products.push(...cart.Product)
-    let OrderStatus = orderStatus.pending
+    let order_Status = orderStatus.pending
     if(payment_Method == paymentMethod.cashOnDelivery){
-        OrderStatus = orderStatus.placed
+        order_Status = orderStatus.placed
     }
-    order.orderStatus = OrderStatus
+    order.orderStatus = order_Status
     // save order
     await order.save()
     // clear cart
@@ -97,7 +100,7 @@ export const payWithStripe = async (req, res, next) => {
     const userId = req.user._id
     const orderId = req.params.orderId
     const order = await Order.findOne({_id:orderId,userId})
-    
+
     if(!order) return next(new ErrorClass("order not found",404,"order not found"))
 
     const paymentObject = {
@@ -131,20 +134,39 @@ export const payWithStripe = async (req, res, next) => {
 
     const payment = await createCheckoutSession(paymentObject)
     const paymentIntent = await createPaymentIntent({amount: order.total, currency: 'EGP'})
+    order.paymentIntent = paymentIntent.id
+    await order.save()
     res.json({message:"order payment success",payment,paymentIntent})
 }
 
 // =============================== apply webhook locally to confirm the  order =======================
 export const webhook = async (req, res, next) => {
+    console.log(req.body);
     const orderId = req.body.data.object.metadata.orderId
-
     const order = await Order.findOne({_id:orderId})
     if(!order) return next(new ErrorClass("order not found",404,"order not found"))
     order.orderStatus = orderStatus.paid
     order.paymentStatus = paymentStatus.success
     order.paidAt = DateTime.now()
     await order.save()
+    const confirmPaymentIntentDetails = await confirmPaymentIntent({
+        paymentIntentId:order.paymentIntent
+    })
+    res.json({message:"order paid successfully",confirmPaymentIntentDetails})
 
-    res.json({message:"order paid successfully"})
+}
 
+
+// =============================== deliver order ===========================
+export const deliverOrder = async (req, res, next) => {
+    const userId = req.user._id 
+    const orderId = req.params.orderId
+    console.log(orderId,userId);
+    const order = await Order.findOne({_id:orderId,userId:userId})
+    console.log(order);
+    if(!order) return next(new ErrorClass("order not found",404,"order not found"))
+    order.orderStatus = orderStatus.delivered
+    order.deliveredAt = DateTime.now()
+    await order.save()
+    res.json({message:"order delivered successfully"})
 }
