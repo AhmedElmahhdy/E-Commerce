@@ -60,12 +60,12 @@ ecommerce-project/
             └── moudle-name.routes.js    # API routes related to user operations
 |   ├── services/
 │   │   └── services-name.service.js   # Handles services
-|   ├── paymant/
+|   ├── paymant
 |   |   └── paymant.js  # Handles payment integration
 │   ├── utils/
 │       └──   # Utility functions like logging
 │
-├── Uploads/
+├── Uploads
 |    └── # contain all images files 
 
 ├── package.json              # Project dependencies and scripts
