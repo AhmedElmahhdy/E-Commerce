@@ -8,12 +8,11 @@ import { DateTime } from "luxon"
 
 
 // =========================== Sign Up ===========================
-export const signUp = async (req,res,next)=>{ 
+export const signUp = async (req,res,next)=>{
    const {name,email,password} = req.body
    const isUserExist = await User.findOne({email})
- 
-   if(isUserExist) return next(new ErrorClass("User already exist",401))
-
+   if(isUserExist) return next(new ErrorClass("Conflict",409,"User already exist"))
+// hash password
    const hashPassword = bcryptjs.hashSync(password,10)
     const user = new User({
         name,
@@ -30,8 +29,8 @@ export const signUp = async (req,res,next)=>{
     from: "E-Commerce <" + process.env.EMAIL_USER + ">",
     subject: "Sign Up verification",
     text:`
-        <h1>Welcome to E-Commerce App ${user.username}.</h1> <br>
-        <a href="${validationLink}"> Click here to verify your account</a>`
+        <h1>Welcome to E-Commerce App ${user.name}.</h1> <br>
+        <a href="${validationLink}"> Click here to verify your account</a>` 
     })
     if (!isSentEmail) {
     return next(new ErrorClass("Email not sent",500));
@@ -64,10 +63,10 @@ export const verfiyEmail = async (req,res,next)=>{
 export const signIn = async (req,res,next)=>{
     const {email,password} = req.body
     const user = await User.findOne({email})
-    if(!user) return next(new ErrorClass("User not found",404))
+    if(!user) return next(new ErrorClass("password or email not match",404))
     if(!user.isEmailVerified) return next(new ErrorClass("Please verfiy your account",400))
     const isMatch = bcryptjs.compareSync(password,user.password)
-    if(!isMatch) return next(new ErrorClass("Wrong password",400))
+    if(!isMatch) return next(new ErrorClass("password or email not match",400))
     const token =`${process.env.PREFIX_TOKEN} ${jwt.sign({id:user._id},process.env.LOGIN_SECRET_KEY_TOKEN)}`
     user.isloggedIn = true
     await user.save()

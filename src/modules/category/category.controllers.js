@@ -11,13 +11,12 @@ import { ApiFeatures } from "../../utils/api-featuers.utils.js"
 
 export const addCategory = async (req,res,next)=>{
      const {name} = req.body
-     console.log(name,req.file);  
      // check required fields 
     if(!name) return next(new ErrorClass("Name is required",400))
      // check if category exist
     const isCategoryExist = await Category.findOne({name})
-    req.model ='category'
     if(isCategoryExist) return next(new ErrorClass("Category already exist",400))
+     req.model ='category'
      // create slug
     const slug = slugify(name,{
         replacement: "-",
@@ -51,8 +50,9 @@ export const getAllCategory = async (req,res,next)=>{
 // =========================== delete category ===========================
 export const deleteCategory = async (req,res,next)=>{
     const {id} = req.params
-    // const category = await Category.findById(id)
-    // if(!category) return next(new ErrorClass("Category not found",404))
+     const category = await Category.findById(id)
+     if(!category) return next(new ErrorClass("Category not found",404))
+     deleteFile(category.image,"category")
         // delete category image 
         deleteFile('1722364831960_25.696989849539275_Apple.jpeg',"category")
         // uploads\category\1722364831960_25.696989849539275_Apple.jpeg

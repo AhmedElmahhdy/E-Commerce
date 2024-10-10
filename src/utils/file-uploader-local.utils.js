@@ -31,7 +31,7 @@ export const fileUploader = (folderName) => {
             cb(null, Date.now() + "_" + Math.random() * 100 + "_" + file.originalname);
         },
     });
-    const upload = multer({ storage ,fileFilter });
+    const upload = multer({ storage ,fileFilter }); 
    // return upload.single(fileName);
    return upload
     

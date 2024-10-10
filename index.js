@@ -15,12 +15,14 @@ connectDB()
 disableCoupon()
 enableCoupon()
 
+
+
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
 app.use("/uploads",express.static("uploads"))
 
 modulesRouters(app)
-//console.log("process.env.STRIPE_SECRET_KEY",process.env.SECRET_KEY_STRIPE);
+
 app.use(globalResponse)
 
 app.listen(process.env.PORT,()=>console.log(`server is running on port ${process.env.PORT}`))
