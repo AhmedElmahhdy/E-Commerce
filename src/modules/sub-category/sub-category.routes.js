@@ -1,6 +1,9 @@
 import { Router } from "express";
 import * as subCategoryController from "./sub-category.controllers.js"
-import { fileUploader } from "../../utils/file-uploader-local.utils.js";
+import { authatication, authorizationMiddleware, cheackId, errorHandler } from "../../middleware/middlewares-index.js";
+import { userRole , fileUploader  } from "../../utils/utils-index.js";
+
+
 
 
 const subCategoryRoutes = Router()
@@ -8,23 +11,31 @@ const subCategoryRoutes = Router()
 subCategoryRoutes
 // =========================== add sub-category ===========================
     .post('/add',
+    authatication(),
+    authorizationMiddleware(userRole.admin),
     fileUploader("sub-category").single("image"),
-    subCategoryController.addSubCategory
+    errorHandler(subCategoryController.addSubCategory)
 )
 
-// =========================== get all sub-category ===========================
+// =========================== get all sub-category =========================== 
 .get('/get-all', 
-    subCategoryController.getAllSubCategory
+    authatication(),
+    authorizationMiddleware(userRole[userRole.user , userRole.admin]),
+    errorHandler(subCategoryController.getAllSubCategory)
 )
 
 .delete('/delete/:id', 
-    subCategoryController.deleteSubCategory
+    authatication(),
+    authorizationMiddleware(userRole.admin),
+    errorHandler(subCategoryController.deleteSubCategory)
 )
 
 // =========================== update sub-category ===========================
 .put('/update/:id', 
+    authatication(),
+    authorizationMiddleware(userRole.admin),
     fileUploader("sub-category").single("image"),
-    subCategoryController.updateSubCategory
+    errorHandler( subCategoryController.updateSubCategory)
 )
 
 export default subCategoryRoutes

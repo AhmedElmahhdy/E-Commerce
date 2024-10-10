@@ -1,4 +1,3 @@
-import { paginateSubDocs } from "mongoose-paginate-v2";
 
 // enums for product collection
 export const discountType = {
